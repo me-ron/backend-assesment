@@ -37,6 +37,10 @@ type Bools struct{
 	Verified bool     `json:"verified" bson:"Verified"`
 }
 
+type VerifyEmail struct {
+	Email string `json:"email" bson:"email"`
+}
+
 // from actual user model to response model to be done in usecase
 func CreateResponseUser(user UserInfo) UserResponse {
 	return UserResponse{

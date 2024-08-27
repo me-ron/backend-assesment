@@ -8,6 +8,8 @@ type PasswordService interface {
 type TokenService interface {
 	GenerateAccessToken(userId string) (string, error)
 	GenerateRefreshToken(userId string) (string, error)
+	GenerateVerificationToken(userId string) (string, error)
 	ValidateAccessToken(token string) (string, error)
 	ValidateRefreshToken(token string) (string, error)
+	ValidateVerificationToken(token string) (string, error)
 }

@@ -11,12 +11,14 @@ import (
 type TokenService_imp struct {
 	AccessTokenSecret       string
 	RefreshTokenSecret      string
+	VerificationTokenSecret string
 }
 
-func NewTokenService(accessSecret, refreshSecret string) *TokenService_imp {
+func NewTokenService(accessSecret, refreshSecret, verificationsecret string) *TokenService_imp {
 	return &TokenService_imp{
 		AccessTokenSecret:       accessSecret,
 		RefreshTokenSecret:      refreshSecret,
+		VerificationTokenSecret: verificationsecret,
 	}
 }
 
@@ -73,6 +75,34 @@ func (t *TokenService_imp) ValidateRefreshToken(tokenStr string) (string, error)
     if !ok {
         return "", errors.New("invalid token claims")
     }
+
+	return claims.ID, nil
+}
+
+func (t *TokenService_imp) GenerateVerificationToken(userId string) (string, error) {
+	claims := domain.UserClaims{
+		ID:      userId,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(t.VerificationTokenSecret))
+}
+
+func (t *TokenService_imp) ValidateVerificationToken(tokenStr string) (string, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &domain.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(t.VerificationTokenSecret), nil
+	})
+
+	if err != nil || !token.Valid {
+		return "", errors.New("invalid verification token")
+	}
+
+	claims, ok := token.Claims.(*domain.UserClaims)
+	if !ok {
+		return "", errors.New("invalid token claims")
+	}
 
 	return claims.ID, nil
 }

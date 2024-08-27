@@ -120,5 +120,15 @@ func (repo *UserRepo)GetBools(id string) (domain.Bools, error){
 	return user, nil
 }
 
+func (repo *UserRepo) VerifyUser(id string) error {
+	objID,_ := primitive.ObjectIDFromHex(id) 
+	filter := bson.D{{Key: "_id" , Value: objID}}
+	setter := bson.D{{Key:"$set" , Value: bson.D{{Key:"Verified" , Value: true}, {Key: "VerifiedCode", Value: ""}}}}
+
+	_,err := repo.Collection.UpdateOne(context.TODO() , filter , setter)
+
+	return err
+}
+
 
 

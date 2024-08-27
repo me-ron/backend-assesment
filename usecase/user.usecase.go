@@ -1,8 +1,10 @@
 package usecase
 
 import (
+	"errors"
 	"fmt"
 	"loan_tracker/domain"
+	utils "loan_tracker/infrastructure/utilities"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -122,4 +124,34 @@ func (u *UserUsecase) DeleteUser(id string) error {
 
 func (u *UserUsecase)GetBools(id string) (domain.Bools, error){
     return u.UserRepo.GetBools(id)
+}
+
+func (u *UserUsecase) SendVerifyEmail(id string , vuser domain.VerifyEmail) error {
+    bools, _ := u.UserRepo.GetBools(id)
+
+	if bools.Verified {
+		return errors.New("user already verified")
+	}
+
+	token,err := u.TokenSrv.GenerateVerificationToken(id)
+	if err != nil {
+		return err
+	}
+	subject,body := utils.BodyVerify(token)
+
+	err = utils.SendVerificationEmail(vuser.Email, subject , body)
+	if err != nil {
+		return err
+	}
+	
+	return nil
+}
+
+
+func (u *UserUsecase) VerifyUser(token string) error {
+	id,err := u.TokenSrv.ValidateVerificationToken(token)
+	if err != nil {
+		return err
+	}
+	return u.UserRepo.VerifyUser(id)
 }
