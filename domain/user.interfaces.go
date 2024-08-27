@@ -21,6 +21,7 @@ type UserUsecase interface{
 	GetOneUser(string) (UserResponse , error) 
 	GetUsers() ([]UserResponse , error)
 	DeleteUser(string) (error)
+	GetBools(string) (Bools, error)
 }
 
 type UserRepository interface{
@@ -29,6 +30,6 @@ type UserRepository interface{
 	GetUserDocumentByID(id string) (UserResponse, error)
 	GetUserDocuments() ([]UserResponse , error)
 	DeleteUserDocument(id string) (error)
-	ISADMIN(string) (bool, error)
+	GetBools(string) (Bools, error)
 
 }

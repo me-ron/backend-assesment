@@ -32,6 +32,11 @@ type UserClaims struct{
 	jwt.StandardClaims
 }
 
+type Bools struct{
+	IsAdmin bool   `json:"isadmin"  bson:"isadmin"`
+	Verified bool     `json:"verified" bson:"Verified"`
+}
+
 // from actual user model to response model to be done in usecase
 func CreateResponseUser(user UserInfo) UserResponse {
 	return UserResponse{

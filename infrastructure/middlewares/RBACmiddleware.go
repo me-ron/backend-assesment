@@ -14,9 +14,8 @@ func RoleBasedAuth(protected bool, repo domain.UserRepository) gin.HandlerFunc {
 		ID, _ := userId.(string)
 
 		user, _ := repo.GetUserDocumentByID(ID)
-		admin,_ := repo.ISADMIN(ID)
-
-
+		bools,_ := repo.GetBools(ID)
+		admin := bools.IsAdmin
 
 		if !admin {
 			if protected {

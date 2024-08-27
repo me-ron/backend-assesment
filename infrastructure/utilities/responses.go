@@ -1,4 +1,4 @@
-package models
+package utils
 
 import (
 	"github.com/gin-gonic/gin"
@@ -35,6 +35,10 @@ func Result(httpStatusCode int, data interface{}, message string, c *gin.Context
 		Message: message,
 		Data:    data,
 	})
+}
+
+func CustomResponse(httpStatusCode int, message string, c *gin.Context) {
+	Result(httpStatusCode, nil, message, c)
 }
 
 // Success response utilities
