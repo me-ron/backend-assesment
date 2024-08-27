@@ -32,6 +32,11 @@ type UserClaims struct{
 	jwt.StandardClaims
 }
 
+type UpdatePassword struct {
+	Password string `json:"password" bson:"password"`
+	Token   string `json:"token" bson:"token"`
+}
+
 type Bools struct{
 	IsAdmin bool   `json:"isadmin"  bson:"isadmin"`
 	Verified bool     `json:"verified" bson:"Verified"`

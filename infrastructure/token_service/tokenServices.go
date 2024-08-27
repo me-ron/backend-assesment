@@ -106,3 +106,31 @@ func (t *TokenService_imp) ValidateVerificationToken(tokenStr string) (string, e
 
 	return claims.ID, nil
 }
+
+func (t *TokenService_imp) GeneratePasswordToken(userId string) (string, error) {
+	claims := domain.UserClaims{
+		ID:      userId,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(t.VerificationTokenSecret))
+}
+
+func (t *TokenService_imp) ValidatePasswordToken(tokenStr string) (string, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &domain.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(t.VerificationTokenSecret), nil
+	})
+
+	if err != nil || !token.Valid {
+		return "", errors.New("invalid password token")
+	}
+
+	claims, ok := token.Claims.(*domain.UserClaims)
+	if !ok {
+		return "", errors.New("invalid token claims")
+	}
+
+	return claims.ID, nil
+}

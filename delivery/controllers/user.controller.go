@@ -173,3 +173,42 @@ func (controller *UserController) VerifyEmail(c *gin.Context) {
     utils.SuccessWithMessage("Email verified successfully", c)
 }
 
+func (controller *UserController) SendForgetPasswordEmail(c *gin.Context) {
+    var input domain.VerifyEmail
+    if err := c.BindJSON(&input); err != nil {
+        utils.BadRequest(c)
+        return
+    }
+
+    err := controller.UserUsecase.SendForgretPasswordEmail(input)
+    if err != nil {
+        utils.Error(c)
+        return
+    }
+
+    utils.SuccessWithMessage("Forget password email sent successfully", c)
+}
+
+
+func (controller *UserController) ResetPassword(c *gin.Context) {
+    token := c.Query("token")
+    var input domain.VerifyEmail
+    if err := c.BindJSON(&input); err != nil {
+        utils.BadRequest(c)
+        return
+    }
+
+    update_password := domain.UpdatePassword{
+        Password: input.Email,
+        Token: token,
+    }
+
+    err := controller.UserUsecase.ValidateForgetPassword(update_password)
+    if err != nil {
+        utils.Error(c)
+        return
+    }
+
+    utils.SuccessWithMessage("Password reset successfully", c)
+}
+

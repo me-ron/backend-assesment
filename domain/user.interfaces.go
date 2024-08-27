@@ -5,8 +5,8 @@ import "github.com/gin-gonic/gin"
 type UserController interface {
 	SignUp(gin.Context)
 	LogIn(gin.Context)
-	// ForgotPassword(gin.Context)
-	// ResetPassword(gin.Context)
+	SendForgretPasswordEmail(gin.Context)
+	ResetPassword(gin.Context)
 	RefreshToken(gin.Context)
 	GetUserProfile(gin.Context)
 	ViewAllUsers(gin.Context)
@@ -25,8 +25,8 @@ type UserUsecase interface{
 	GetBools(string) (Bools, error)
 	SendVerifyEmail(VerifyEmail) error
 	VerifyUser(string) error
-	SendForgretPasswordEmail(string , VerifyEmail) error
-	ValidateForgetPassword(string , string) error
+	SendForgretPasswordEmail(VerifyEmail) error
+	ValidateForgetPassword(UpdatePassword) error
 }
 
 type UserRepository interface{
@@ -37,4 +37,5 @@ type UserRepository interface{
 	DeleteUserDocument(string) (error)
 	GetBools(string) (Bools, error)
 	VerifyUser(string) error
+	UpdatePassword(string, string) error
 }

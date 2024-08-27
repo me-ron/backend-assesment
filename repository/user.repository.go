@@ -130,5 +130,12 @@ func (repo *UserRepo) VerifyUser(id string) error {
 	return err
 }
 
+func (repo *UserRepo) UpdatePassword(email string, password string) error {
+	filter := bson.D{{Key: "email" , Value: email}}
+	setter := bson.D{{Key:"$set" , Value: bson.D{{Key:"password" , Value: password}}}}
 
+	_,err := repo.Collection.UpdateOne(context.TODO() , filter , setter)
+
+	return err
+}
 

@@ -10,7 +10,7 @@ import (
 )
 
 
-func SendVerificationEmail(to, subject, body string) error {
+func SendEmail(to, subject, body string) error {
 	err := godotenv.Load()
 	if err != nil {
 		log.Panic("Failed to load .env" , err.Error())
@@ -47,4 +47,15 @@ func BodyVerify(token string) (string, string) {
 	return subject,body
 }
 
+func BodyForgetPassword(token string) (string, string) {
+	subject := "Forget Password"
+	body := fmt.Sprintf(
+	`
+	<h2>Reset Your Password</h2>
+	<hr>
+	<p>Click the link below to reset your password:</p>
+	<a href="http://localhost:8080/users/reset-password/%s">Reset Password</a>
+	`,token)
 
+	return subject,body
+}

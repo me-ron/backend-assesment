@@ -139,7 +139,7 @@ func (u *UserUsecase) SendVerifyEmail(id string , vuser domain.VerifyEmail) erro
 	}
 	subject,body := utils.BodyVerify(token)
 
-	err = utils.SendVerificationEmail(vuser.Email, subject , body)
+	err = utils.SendEmail(vuser.Email, subject , body)
 	if err != nil {
 		return err
 	}
@@ -154,4 +154,42 @@ func (u *UserUsecase) VerifyUser(token string) error {
 		return err
 	}
 	return u.UserRepo.VerifyUser(id)
+}
+
+func (u *UserUsecase) SendForgretPasswordEmail(vuser domain.VerifyEmail) error {
+    user,err := u.UserRepo.FindUserByEmail(vuser.Email)
+    if err != nil {
+        return err
+    }
+    if user == nil {
+        return errors.New("user not found")
+    }
+
+    token,err := u.TokenSrv.GeneratePasswordToken(user.ID.Hex())
+    if err != nil {
+        return err
+    }
+    subject,body := utils.BodyForgetPassword(token)
+
+    err = utils.SendEmail(vuser.Email, subject , body)
+    if err != nil {
+        return err
+    }
+    
+    return nil
+}
+
+
+func (u *UserUsecase) ValidateForgetPassword(input domain.UpdatePassword) error {
+    id, err := u.TokenSrv.ValidatePasswordToken(input.Token)
+    if err != nil {
+        return err
+    }
+
+    hashedPassword, err := u.PasswordSrv.HashPassword(input.Password)
+    if err != nil {
+        return err
+    }
+
+    return u.UserRepo.UpdatePassword(id, hashedPassword)
 }
