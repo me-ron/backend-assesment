@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"loan_tracker/domain"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -123,18 +124,21 @@ func (repo *UserRepo)GetBools(id string) (domain.Bools, error){
 func (repo *UserRepo) VerifyUser(id string) error {
 	objID,_ := primitive.ObjectIDFromHex(id) 
 	filter := bson.D{{Key: "_id" , Value: objID}}
-	setter := bson.D{{Key:"$set" , Value: bson.D{{Key:"Verified" , Value: true}, {Key: "VerifiedCode", Value: ""}}}}
+	setter := bson.D{{Key:"$set" , Value: bson.D{{Key:"Verified" , Value: true}}}}
 
-	_,err := repo.Collection.UpdateOne(context.TODO() , filter , setter)
+	res,err := repo.Collection.UpdateOne(context.TODO() , filter , setter)
+	fmt.Println(res.ModifiedCount)
 
 	return err
 }
 
-func (repo *UserRepo) UpdatePassword(email string, password string) error {
-	filter := bson.D{{Key: "email" , Value: email}}
-	setter := bson.D{{Key:"$set" , Value: bson.D{{Key:"password" , Value: password}}}}
+func (repo *UserRepo) UpdatePassword(id string, password string) error {
+	user_id, _:= primitive.ObjectIDFromHex(id)
+	filter := bson.D{{Key: "_id" , Value: user_id}}
+	setter := bson.D{{Key:"$set" , Value: bson.D{{Key:"Password" , Value: password}}}}
 
-	_,err := repo.Collection.UpdateOne(context.TODO() , filter , setter)
+	res,err := repo.Collection.UpdateOne(context.TODO() , filter , setter)
+	fmt.Println(res.ModifiedCount)
 
 	return err
 }

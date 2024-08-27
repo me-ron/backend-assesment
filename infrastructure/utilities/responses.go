@@ -3,12 +3,12 @@ package utils
 import (
 	"context"
 	"loan_tracker/config"
+	"loan_tracker/domain"
 	"log"
 	"time"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Response represents the structure of an HTTP response.
@@ -40,12 +40,13 @@ const (
 func Result(httpStatusCode int, data interface{}, message string, c *gin.Context) {
 	//get the request id from the context
 	reqID := requestid.Get(c)
-	logEntry := bson.M{
-		"request_id": reqID,
-		"status":     httpStatusCode,
-		"message":    message,
-		"data":       data,
-		"timestamp":  time.Now(),
+	logEntry := domain.Log{
+		RequestID: reqID,
+		Status:    httpStatusCode,
+		Message:   message,
+		Data:      data,
+		Timestamp: time.Now().Format(time.RFC3339),
+	
 	}
 
 	_, err := config.LogCollection.InsertOne(context.TODO(), logEntry)

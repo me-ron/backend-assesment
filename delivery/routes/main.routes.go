@@ -12,9 +12,14 @@ func SetUp(router *gin.Engine) {
 	clinect.Connect_could()
 
 	userCollection := &database.MongoCollection{
-		Collection: clinect.Client.Database("BlogPost").Collection("Users"),
+		Collection: clinect.Client.Database("LoanTracker").Collection("Users"),
 	}
 
+	loanCollection := &database.MongoCollection{
+		Collection: clinect.Client.Database("LoanTracker").Collection("Loans"),
+	}
+	
 	NewUserRouter(router, userCollection)
+	NewLoanRouter(router, loanCollection, userCollection)
 
 }

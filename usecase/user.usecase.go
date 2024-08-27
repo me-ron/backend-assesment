@@ -149,7 +149,8 @@ func (u *UserUsecase) SendVerifyEmail(id string , vuser domain.VerifyEmail) erro
 
 
 func (u *UserUsecase) VerifyUser(token string) error {
-	id,err := u.TokenSrv.ValidateVerificationToken(token)
+	id, err := u.TokenSrv.ValidateVerificationToken(token)
+    fmt.Println(id)
 	if err != nil {
 		return err
 	}

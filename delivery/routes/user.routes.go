@@ -30,7 +30,7 @@ func NewUserRouter(router *gin.Engine, userCollection domain.CollectionInterface
 		log.Panic("No refreshtoken")
 	}
 
-	verfication_secret := os.Getenv("VERIFICATIONTOKEN")
+	verfication_secret := os.Getenv("VERIFICATIONTOKENSECRET")
 	if verfication_secret == ""{
 		log.Panic("No verificationtoken")
 	}
@@ -44,16 +44,17 @@ func NewUserRouter(router *gin.Engine, userCollection domain.CollectionInterface
 
 	LoggedIN := middleware.LoggedIn(TokenSvc)
 	mustbeAdmin := middleware.RoleBasedAuth(true, UserRepo)
-	userRouter := router.Group("/user")
+	userRouter := router.Group("/users")
 	{
 		userRouter.POST("/register", UserController.SignUp)
 		userRouter.POST("/login", UserController.LogIn)
-		userRouter.POST("/verify-email", UserController.VerifyEmail)
+		userRouter.POST("/verify/:id", UserController.SendVerificationEmail)
+		userRouter.POST("/verify-email/:token", UserController.VerifyEmail)
 		userRouter.GET("/profile", LoggedIN, UserController.GetOneUser)
 		userRouter.POST("/token/refresh", LoggedIN, UserController.Refresh)
 		userRouter.POST("/logout", LoggedIN, UserController.LogOut)
 		userRouter.POST("/password-reset", LoggedIN, UserController.SendForgetPasswordEmail)
-		userRouter.POST("/password-update", LoggedIN, UserController.ResetPassword)
+		userRouter.POST("/password-update/:token", LoggedIN, UserController.ResetPassword)
 	}
 
 	admin := router.Group("/admin")

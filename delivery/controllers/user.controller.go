@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"loan_tracker/domain"
 	utils "loan_tracker/infrastructure/utilities"
 	"net/http"
@@ -110,7 +111,7 @@ func (ac *UserController) Refresh(c *gin.Context) {
 }
 
 func (controller *UserController) GetOneUser(c *gin.Context) {
-    id, _ := c.Get("user_id")
+    id, _ := c.Get("userId")
     userId, _ := id.(string)
     user,err := controller.UserUsecase.GetOneUser(userId)
     if err != nil {
@@ -151,10 +152,10 @@ func (controller *UserController) SendVerificationEmail(c *gin.Context) {
         utils.BadRequest(c)
         return
     }
-    id, _ := c.Get("user_id")
-    userId, _ := id.(string)
+    userId:= c.Param("id")
     err := controller.UserUsecase.SendVerifyEmail(userId, input)
     if err != nil {
+        fmt.Println(err.Error())
         utils.Error(c)
         return
     }
@@ -163,7 +164,7 @@ func (controller *UserController) SendVerificationEmail(c *gin.Context) {
 }
 
 func (controller *UserController) VerifyEmail(c *gin.Context) {
-    token := c.Query("token")
+    token := c.Param("token")
 
     err := controller.UserUsecase.VerifyUser(token)
     if err != nil {
@@ -192,15 +193,15 @@ func (controller *UserController) SendForgetPasswordEmail(c *gin.Context) {
 
 
 func (controller *UserController) ResetPassword(c *gin.Context) {
-    token := c.Query("token")
-    var input domain.VerifyEmail
+    token := c.Param("token")
+    var input domain.UpdatePassword
     if err := c.BindJSON(&input); err != nil {
         utils.BadRequest(c)
         return
     }
 
     update_password := domain.UpdatePassword{
-        Password: input.Email,
+        Password: input.Password,
         Token: token,
     }
 

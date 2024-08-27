@@ -16,7 +16,6 @@ type ServerConnection struct {
 }
 
 func (SC *ServerConnection) Connect_could() {
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Panic("Failed to load .env", err.Error())

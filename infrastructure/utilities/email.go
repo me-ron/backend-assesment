@@ -17,7 +17,13 @@ func SendEmail(to, subject, body string) error {
 	}
 
 	username := os.Getenv("USER_EMAIL")
+	if username == ""{
+		log.Panic("No email")
+	}
 	password := os.Getenv("EMAIL_PASS")
+	if password == ""{
+		log.Panic("No password")
+	}
 
 	m := gmail.NewMessage()
 	m.SetHeader("From", username)
@@ -41,7 +47,7 @@ func BodyVerify(token string) (string, string) {
 	<h2>Verify Your Email</h2>
 	<hr>
 	<p>Click the link below to verify your email:</p>
-	<a href="http://localhost:8080/users/verify-email?token=%s">Verify Email</a>
+	<a href="http://localhost:8080/users/verify-email/%s">Verify Email</a>
 	`,token)
 
 	return subject,body
@@ -54,7 +60,7 @@ func BodyForgetPassword(token string) (string, string) {
 	<h2>Reset Your Password</h2>
 	<hr>
 	<p>Click the link below to reset your password:</p>
-	<a href="http://localhost:8080/users/password-update?token=%s">Reset Password</a>
+	<a href="http://localhost:8080/users/password-update/%s">Reset Password</a>
 	`,token)
 
 	return subject,body
