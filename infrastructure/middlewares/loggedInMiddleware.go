@@ -1,14 +1,14 @@
 package middleware
 
 import (
-	tokenservice "loan_tracker/infrastructure/token_service"
+	"loan_tracker/domain"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func LoggedIn(TS tokenservice.TokenService_imp) gin.HandlerFunc {
+func LoggedIn(TS domain.TokenService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Check for the Authorization header
 		auth := c.GetHeader("Authorization")

@@ -1,13 +1,20 @@
 package utils
 
 import (
+	"context"
+	"loan_tracker/config"
+	"log"
+	"time"
+
+	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Response represents the structure of an HTTP response.
 type Response struct {
-	Message string      `json:"message"`        // Description or error message
-	Data    interface{} `json:"data,omitempty"` // Payload data, if any
+	Message string      `json:"message" bson:"message"`   // Description or error message
+	Data    interface{} `json:"data,omitempty" bson:"data,omitempty"` // Payload data, if any
 }
 
 // Status codes and corresponding messages
@@ -31,12 +38,28 @@ const (
 
 // Result sends a standardized JSON response.
 func Result(httpStatusCode int, data interface{}, message string, c *gin.Context) {
+	//get the request id from the context
+	reqID := requestid.Get(c)
+	logEntry := bson.M{
+		"request_id": reqID,
+		"status":     httpStatusCode,
+		"message":    message,
+		"data":       data,
+		"timestamp":  time.Now(),
+	}
+
+	_, err := config.LogCollection.InsertOne(context.TODO(), logEntry)
+	if err != nil {
+		log.Printf("Failed to log to MongoDB: %v", err)
+	}
 	c.JSON(httpStatusCode, Response{
 		Message: message,
 		Data:    data,
 	})
 }
 
+
+//custom response sends customized responses
 func CustomResponse(httpStatusCode int, message string, c *gin.Context) {
 	Result(httpStatusCode, nil, message, c)
 }

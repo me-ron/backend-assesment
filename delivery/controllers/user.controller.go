@@ -110,9 +110,9 @@ func (ac *UserController) Refresh(c *gin.Context) {
 }
 
 func (controller *UserController) GetOneUser(c *gin.Context) {
-    id := c.Param("id")
-
-    user,err := controller.UserUsecase.GetOneUser(id)
+    id, _ := c.Get("user_id")
+    userId, _ := id.(string)
+    user,err := controller.UserUsecase.GetOneUser(userId)
     if err != nil {
         utils.NotFound(c)
         return
@@ -151,8 +151,9 @@ func (controller *UserController) SendVerificationEmail(c *gin.Context) {
         utils.BadRequest(c)
         return
     }
-
-    err := controller.UserUsecase.SendVerifyEmail(input)
+    id, _ := c.Get("user_id")
+    userId, _ := id.(string)
+    err := controller.UserUsecase.SendVerifyEmail(userId, input)
     if err != nil {
         utils.Error(c)
         return
@@ -162,9 +163,9 @@ func (controller *UserController) SendVerificationEmail(c *gin.Context) {
 }
 
 func (controller *UserController) VerifyEmail(c *gin.Context) {
-    id := c.Param("id")
+    token := c.Query("token")
 
-    err := controller.UserUsecase.VerifyUser(id)
+    err := controller.UserUsecase.VerifyUser(token)
     if err != nil {
         utils.NotFound(c)
         return

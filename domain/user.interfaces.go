@@ -23,7 +23,7 @@ type UserUsecase interface{
 	GetUsers() ([]UserResponse , error)
 	DeleteUser(string) (error)
 	GetBools(string) (Bools, error)
-	SendVerifyEmail(VerifyEmail) error
+	SendVerifyEmail(string, VerifyEmail) error
 	VerifyUser(string) error
 	SendForgretPasswordEmail(VerifyEmail) error
 	ValidateForgetPassword(UpdatePassword) error
